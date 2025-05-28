@@ -19,17 +19,17 @@ var allowedOrigins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS")?
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("ProdCorsPolicy", policy =>
+    if (allowedOrigins != null && allowedOrigins.Length > 0)
     {
-
-        if (allowedOrigins != null && allowedOrigins.Length != 0)
+        options.AddPolicy("ProdCorsPolicy", policy =>
         {
             policy.WithOrigins(allowedOrigins)
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .WithExposedHeaders("Content-Disposition");
-        }
-    });
+        });
+    }
+
     options.AddPolicy("DevCorsPolicy", policy =>
     {
         policy.AllowAnyOrigin()
@@ -37,7 +37,6 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader()
               .WithExposedHeaders("Content-Disposition");
     });
-   
 });
 
 var app = builder.Build();
@@ -48,11 +47,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseCors("DevCorsPolicy");
 }
-else if (app.Environment.IsProduction())
+else if (app.Environment.IsProduction() && allowedOrigins != null && allowedOrigins.Length > 0)
 {
     app.UseCors("ProdCorsPolicy");
 }
-
+else if (app.Environment.IsProduction())
+{
+    app.Logger.LogWarning("No allowed origins defined for production. CORS will not be applied.");
+}
 
 
 app.UseHttpsRedirection();
