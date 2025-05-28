@@ -1,0 +1,6 @@
+@rconnectAPI_HostAddress = http://localhost:5043
+
+GET {{rconnectAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
