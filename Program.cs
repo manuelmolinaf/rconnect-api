@@ -48,9 +48,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseCors("DevCorsPolicy");
 }
-
-if (!app.Environment.IsProduction())
-{   
+else if (app.Environment.IsProduction())
+{
     app.UseCors("ProdCorsPolicy");
 }
 
