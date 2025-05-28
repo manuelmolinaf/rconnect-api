@@ -1,10 +1,11 @@
 ﻿using rconnectAPI.Models;
+using rconnectAPI.Services.Interfaces;
 
-namespace rconnectAPI.Services
+namespace rconnectAPI.Services.Concrete
 {
-    public class ServersService
+    public class ServersService: IServersService
     {
-        readonly private Server[] servers = [];
+        private readonly Server[] servers = [];
 
         public ServersService() {
 
@@ -15,5 +16,12 @@ namespace rconnectAPI.Services
         {
             return [.. servers.Select(s => (ServerDto)s)];
         }
+
+        public Server? GetServer(string host)
+        {
+            return servers.FirstOrDefault(s => s.Host == host);
+        }
+
+
     }
 }

@@ -1,20 +1,30 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using rconnectAPI.Models;
-using rconnectAPI.Services;
+using rconnectAPI.Services.Concrete;
+using rconnectAPI.Services.Interfaces;
 
 namespace rconnectAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ServersController(ServersService servesService) : ControllerBase
+    public class ServersController(IServersService servesService, IRconService rconService) : ControllerBase
     {
-        private readonly ServersService _serversService = servesService;
+        private readonly IServersService _serversService = servesService;
+        private readonly IRconService _rconService = rconService;
 
-        [HttpGet(Name = "GetServes")]
-        public ActionResult<IEnumerable<ServerDto>> GetServes()
+        [HttpGet("GetServers")]
+        public ActionResult<IEnumerable<ServerDto>> GetServers()
         {
             return Ok(_serversService.GetServerDtos());
         }
+
+        [HttpPost("SendMessage")]
+        public async Task<ActionResult<string>> SendMessage([FromBody] RconMessageRequest request)
+        {
+            string response = await _rconService.SendRconMessage(request.Host, request.Message);
+            return Ok(response);
+        }
+
+
     }
 }
